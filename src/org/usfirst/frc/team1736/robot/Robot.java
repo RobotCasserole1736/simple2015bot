@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1736.robot;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -21,6 +22,10 @@ public class Robot extends IterativeRobot {
 	Victor DTLB_motor;
 	Victor DTRB_motor;
 	Victor slide_motor;
+	
+	ClosedLoopIntake intake;
+
+	
 	Xbox360Controller joy1;
 	
 	public final double SLIDE_CORR_GAIN = 0.3;
@@ -35,6 +40,8 @@ public class Robot extends IterativeRobot {
     	DTLB_motor = new Victor(1);
     	DTRB_motor = new Victor(2);
     	slide_motor = new Victor(4);
+    	intake = new ClosedLoopIntake();
+    	
     	joy1 = new Xbox360Controller(0);
     }
     
@@ -69,6 +76,17 @@ public class Robot extends IterativeRobot {
     	DTRB_motor.set(-backRightMotorValue);
     	DTLB_motor.set(backLeftMotorValue);
 		slide_motor.set(slideMotorValue);
+		
+		if(joy1.LB())
+			intake.next_state = IntLncState.INTAKE;
+		else if(joy1.B())
+			intake.next_state = IntLncState.RETRACT;
+		else
+			intake.next_state = IntLncState.STOPPED_NO_BALL;
+		
+		SmartDashboard.putNumber("IntakeSetpoint", intake.getSetpoint());
+		SmartDashboard.putNumber("IntakeActualAngle", intake.intake_encoder.getDistance());
+		SmartDashboard.putString("IntakeState", intake.present_state.toString());
         
     }
     
