@@ -85,8 +85,9 @@ public class Robot extends IterativeRobot {
 			intake.next_state = IntLncState.STOPPED_NO_BALL;
 		
 		SmartDashboard.putNumber("IntakeSetpoint", intake.getSetpoint());
-		SmartDashboard.putNumber("IntakeActualAngle", intake.intake_encoder.getDistance());
+		SmartDashboard.putNumber("IntakeActualAngle", intake.intake_encoder.getRaw() * intake.ENCODER_DEG_PER_TICK);
 		SmartDashboard.putString("IntakeState", intake.present_state.toString());
+		System.out.println(intake.intake_encoder.getRaw() * intake.ENCODER_DEG_PER_TICK);
         
     }
     
