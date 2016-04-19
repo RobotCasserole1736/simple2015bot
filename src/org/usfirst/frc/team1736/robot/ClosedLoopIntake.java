@@ -6,13 +6,13 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 
 public class ClosedLoopIntake extends PIDSubsystem {
 	
-	static double P = 0.0009;
+	static double P = 0.0025;
 	static double I = 0.0003;
-	static double D = 0.0;
+	static double D = 0.0006;
 
-	final double ENCODER_DEG_PER_TICK = 360.0/(2048.0*4.0);
+	final double ENCODER_DEG_PER_TICK = 360.0/(120.0*4.0);
 	
-	final double RETRACT_DEGREES = 480;
+	final double RETRACT_DEGREES = 360;
 	
 	Victor intake_motor;
 	Encoder intake_encoder;
@@ -24,6 +24,7 @@ public class ClosedLoopIntake extends PIDSubsystem {
 		super("ClosedLoopIntakePID", P, I, D); //we don't need to WPILIB feed forward. we do feed fowrard ourselfs cuz they were silly with their implementation.
     	intake_motor = new Victor(5);
     	intake_encoder = new Encoder(0,1);
+    	intake_encoder.setReverseDirection(true);
 		setOutputRange(-1,1); //Must not command the motor in reverse since the input speed taken as unsigned (negative motor commands cause instability)
 		present_state = IntLncState.STOPPED_NO_BALL;
 		next_state = IntLncState.STOPPED_NO_BALL;
@@ -49,9 +50,9 @@ public class ClosedLoopIntake extends PIDSubsystem {
 		}
 		else if(next_state == IntLncState.RETRACT){
 			if(present_state != IntLncState.RETRACT){
-				this.setSetpoint(intake_encoder.getRaw()*ENCODER_DEG_PER_TICK - RETRACT_DEGREES);
+				this.setSetpoint(intake_encoder.getRaw()*ENCODER_DEG_PER_TICK + RETRACT_DEGREES);
 			}
-			intake_motor.set(output);
+			intake_motor.set(-output); //invert motor direction
 		}
 			
 		present_state = next_state;
